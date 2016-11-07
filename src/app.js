@@ -165,8 +165,10 @@ class Viz {
       this.world.creatures.forEach((q) => {
         input.push(q.location.x)
         input.push(q.location.y)
+        input.push(q.location.z)
         input.push(q.velocity.x)
         input.push(q.velocity.y)
+        input.push(q.velocity.z)
       })
 
       let output = p.network.activate(input)
@@ -189,35 +191,35 @@ class Viz {
 
       p.borders()
 
-      if (p.numConnections >= this.effectController.maxConnections ) {
-        continue
-      }
-
-      for (let j = i + 1; j < this.particleCount; j++ ) {
-
-        const q = this.world.creatures[j]
-
-        if (q.numConnections >= this.effectController.maxConnections) {
-          continue
-        }
-
-        const dist = p.location.distanceTo(q.location)
-
-        if (dist < this.effectController.minDistance) {
-
-          p.numConnections++
-          q.numConnections++
-
-          let alpha = 1.0 - dist / this.effectController.minDistance
-
-          // this.line.update(vertexpos, colorpos, alpha, p, q, i, j)
-
-          vertexpos += 6
-          colorpos += 6
-
-          numConnected++
-        }
-      }
+      // if (p.numConnections >= this.effectController.maxConnections ) {
+      //   continue
+      // }
+      //
+      // for (let j = i + 1; j < this.particleCount; j++ ) {
+      //
+      //   const q = this.world.creatures[j]
+      //
+      //   if (q.numConnections >= this.effectController.maxConnections) {
+      //     continue
+      //   }
+      //
+      //   const dist = p.location.distanceTo(q.location)
+      //
+      //   if (dist < this.effectController.minDistance) {
+      //
+      //     p.numConnections++
+      //     q.numConnections++
+      //
+      //     let alpha = 1.0 - dist / this.effectController.minDistance
+      //
+      //     // this.line.update(vertexpos, colorpos, alpha, p, q, i, j)
+      //
+      //     vertexpos += 6
+      //     colorpos += 6
+      //
+      //     numConnected++
+      //   }
+      // }
     }
 
 

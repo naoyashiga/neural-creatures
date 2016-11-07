@@ -5,7 +5,7 @@ import synaptic from 'synaptic'
 export default class Creature {
   constructor(world) {
     // this.network = new synaptic.Architect.Perceptron(4, 3, 3)
-    this.network = new synaptic.Architect.Perceptron(40, 25, 3)
+    this.network = new synaptic.Architect.Perceptron(60, 20, 3)
     this.world = world
 
     this.mass = .3;
@@ -19,9 +19,9 @@ export default class Creature {
     this.location = new THREE.Vector3(
       Math.random() * this.world.width - this.world.width / 2,
       Math.random() * this.world.height - this.world.height / 2,
-      0
+      Math.random() * this.world.depth - this.world.depth / 2
     )
-    this.velocity = new THREE.Vector3(Math.random(), Math.random(), 0)
+    this.velocity = new THREE.Vector3(Math.random(), Math.random(), Math.random())
     this.acceleration = new THREE.Vector3(0, 0, 0)
 
     this.numConnections = 0
