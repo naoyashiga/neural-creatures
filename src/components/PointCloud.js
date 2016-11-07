@@ -1,8 +1,10 @@
 const THREE = require('three')
-import Particle from './Particle'
+// import Particle from './Particle'
+import Creature from './Creature'
 
 export default class PointCloud {
-  constructor(maxParticleCount) {
+  constructor(maxParticleCount, world) {
+    this.world = world
 
     this.maxParticleCount = maxParticleCount
 
@@ -29,7 +31,7 @@ export default class PointCloud {
 
   getParticles(particles) {
     for (let i = 0; i < this.maxParticleCount; i++) {
-      const p = new Particle()
+      const p = new Creature(this.world)
 
       this.positions[i * 3] = p.location.x
       this.positions[i * 3 + 1] = p.location.y

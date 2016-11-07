@@ -1,5 +1,7 @@
 const THREE = require('three')
 
+import synaptic from 'synaptic'
+
 import Stats from 'stats.js'
 import dat from 'dat-gui'
 
@@ -10,18 +12,34 @@ const OrbitControls = require('three-orbit-controls')(THREE)
 
 class Viz {
   constructor() {
+
+    var myPerceptron = new synaptic.Architect.Perceptron(2, 3, 1)
+    console.log(myPerceptron);
+
+
+
+
+
+
+
     this.w = window.innerWidth
     this.h = window.innerHeight
-    this.particleCount = 5
-    this.maxParticleCount = 5
+    this.particleCount = 10
+    this.maxParticleCount = 10
     this.particles = []
     this.r = 800
+
+    this.world = {
+      width: this.r,
+      height: this.r,
+      depth: this.r
+    }
 
     this.group = new THREE.Group()
 
     this.effectController = {
       showDots: true,
-      showLines: true,
+      // showLines: true,
       minDistance: 100,
       maxConnections: 20,
       particleCount: 500
@@ -36,11 +54,11 @@ class Viz {
     this.scene = new THREE.Scene()
     this.scene.add(this.group)
 
-    this.pointCloud = new PointCloud(this.maxParticleCount)
+    this.pointCloud = new PointCloud(this.maxParticleCount, this.world)
     this.particles = this.pointCloud.getParticles(this.particles)
     this.pointCloud.setup()
 
-    this.line = new Line(this.maxParticleCount)
+    // this.line = new Line(this.maxParticleCount)
 
     this.addToGroup()
 
@@ -61,7 +79,7 @@ class Viz {
 
     gui.add(this.effectController, "showDots").onChange((value) => { this.pointCloud.cloud.visible = value; })
 
-    gui.add(this.effectController, "showLines" ).onChange((value) => { this.line.mesh.visible = value; })
+    // gui.add(this.effectController, "showLines" ).onChange((value) => { this.line.mesh.visible = value; })
 
     gui.add(this.effectController, "minDistance", 10, 300 )
     gui.add(this.effectController, "maxConnections", 0, 30, 1)
@@ -98,7 +116,7 @@ class Viz {
   addToGroup() {
     this.group.add(this.createBoxHelper())
     this.group.add(this.pointCloud.cloud)
-    this.group.add(this.line.mesh)
+    // this.group.add(this.line.mesh)
   }
 
   addRenderer() {
@@ -138,7 +156,8 @@ class Viz {
 
       this.pointCloud.positions[i * 3] = p.location.x
       this.pointCloud.positions[i * 3 + 1] = p.location.y
-      this.pointCloud.positions[i * 3 + 2] = p.location.y
+      // this.pointCloud.positions[i * 3 + 2] = 0
+      this.pointCloud.positions[i * 3 + 2] = p.location.z
       // this.pointCloud.positions[i * 3 + 2] = p.location.z
 
       p.borders()
@@ -164,7 +183,7 @@ class Viz {
 
           let alpha = 1.0 - dist / this.effectController.minDistance
 
-          this.line.update(vertexpos, colorpos, alpha, p, q, i, j)
+          // this.line.update(vertexpos, colorpos, alpha, p, q, i, j)
 
           vertexpos += 6
           colorpos += 6
@@ -175,9 +194,9 @@ class Viz {
     }
 
 
-    this.line.mesh.geometry.setDrawRange(0, numConnected * 2)
-    this.line.mesh.geometry.attributes.position.needsUpdate = true
-    this.line.mesh.geometry.attributes.color.needsUpdate = true
+    // this.line.mesh.geometry.setDrawRange(0, numConnected * 2)
+    // this.line.mesh.geometry.attributes.position.needsUpdate = true
+    // this.line.mesh.geometry.attributes.color.needsUpdate = true
 
     this.pointCloud.cloud.geometry.attributes.position.needsUpdate = true
 
@@ -191,7 +210,7 @@ class Viz {
   render() {
     const time = Date.now() * 0.001
 
-    this.group.rotation.y = time * 0.1
+    // this.group.rotation.y = time * 0.1
     this.renderer.render(this.scene, this.camera)
   }
 }

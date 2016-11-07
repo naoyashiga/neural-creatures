@@ -1,20 +1,22 @@
 const THREE = require('three')
+import synaptic from 'synaptic'
 
 
-export default class Particle {
-  constructor() {
-    this.radius = 100
+export default class Creature {
+  constructor(world) {
+    this.network = new synaptic.Architect.Perceptron(4, 3, 3)
+    this.world = world
+
 
     this.location = new THREE.Vector3(
-       Math.random() * this.radius - this.radius / 2,
-       Math.random() * this.radius - this.radius / 2,
-       Math.random() * this.radius - this.radius / 2
+      Math.random() * this.world.width - this.world.width / 2,
+      Math.random() * this.world.height - this.world.height / 2,
+      0
     )
-
-    this.velocity = new THREE.Vector3( -1 + Math.random() * 2, -1 + Math.random() * 2,  -1 + Math.random() * 2 )
+    this.velocity = new THREE.Vector3(Math.random() * 10, Math.random() * 10, 0)
+    this.acceleration = new THREE.Vector3(0, 0, 0)
 
     this.numConnections = 0
-
   }
 
   update() {
@@ -22,7 +24,7 @@ export default class Particle {
   }
 
   borders() {
-    const rHalf = this.radius / 2
+    const rHalf = this.world.width / 2
     if (this.location.y < -rHalf || this.location.y > rHalf ) {
       this.velocity.y *= -1
     }
@@ -34,6 +36,5 @@ export default class Particle {
     if (this.location.z < -rHalf || this.location.z > rHalf ) {
       this.velocity.z *= -1
     }
-
   }
 }
