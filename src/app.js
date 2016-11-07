@@ -13,10 +13,6 @@ const OrbitControls = require('three-orbit-controls')(THREE)
 class Viz {
   constructor() {
 
-    var myPerceptron = new synaptic.Architect.Perceptron(2, 3, 1)
-    console.log(myPerceptron);
-
-
 
 
 
@@ -24,8 +20,8 @@ class Viz {
 
     this.w = window.innerWidth
     this.h = window.innerHeight
-    this.particleCount = 10
-    this.maxParticleCount = 10
+    this.particleCount = 1
+    this.maxParticleCount = 1
     this.particles = []
     this.r = 800
 
@@ -151,6 +147,19 @@ class Viz {
     for(let i = 0; i < this.particleCount; i++) {
 
       const p = this.particles[i]
+
+      let input = []
+
+      this.particles.forEach((q) => {
+        input.push(q.location.x)
+        input.push(q.location.y)
+        input.push(q.velocity.x)
+        input.push(q.velocity.y)
+      })
+
+      let output = p.network.activate(input)
+      p.moveTo(output)
+      console.log(output);
 
       p.update()
 
