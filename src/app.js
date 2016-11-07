@@ -10,25 +10,24 @@ import Line from './components/Line'
 
 const OrbitControls = require('three-orbit-controls')(THREE)
 
+// http://caza.la/synaptic/#/
+// view-source:http://caza.la/synaptic/#/
 class Viz {
   constructor() {
 
 
-
-
-
-
     this.w = window.innerWidth
     this.h = window.innerHeight
-    this.particleCount = 1
-    this.maxParticleCount = 1
-    this.particles = []
+    this.particleCount = 10
+    this.maxParticleCount = 10
+    // this.world.creatures = []
     this.r = 800
 
     this.world = {
       width: this.r,
       height: this.r,
-      depth: this.r
+      depth: this.r,
+      creatures: [],
     }
 
     this.group = new THREE.Group()
@@ -51,7 +50,7 @@ class Viz {
     this.scene.add(this.group)
 
     this.pointCloud = new PointCloud(this.maxParticleCount, this.world)
-    this.particles = this.pointCloud.getParticles(this.particles)
+    this.world.creatures = this.pointCloud.getParticles(this.world.creatures)
     this.pointCloud.setup()
 
     // this.line = new Line(this.maxParticleCount)
@@ -132,7 +131,20 @@ class Viz {
     window.addEventListener('resize', this.onWindowResize.bind(this), false)
   }
 
+  targetX(creature) {
+    let cohesion = creature.cohesion(this.world.creatures)
+    return cohesion.x / this.world.width
+  }
 
+  targetY(creature) {
+    let cohesion = creature.cohesion(this.world.creatures)
+    return cohesion.y / this.world.height
+  }
+
+  targetAngle(creature) {
+    let alignment = creature.align(this.world.creatures)
+    return (Math.atan2(alignment.y, alignment.x) + Math.PI) / (Math.PI * 2)
+  }
 
   animate() {
 
@@ -140,17 +152,17 @@ class Viz {
     let colorpos = 0;
     let numConnected = 0;
 
-    this.particles.forEach((p) => {
+    this.world.creatures.forEach((p) => {
       p.numConnections = 0
     })
 
     for(let i = 0; i < this.particleCount; i++) {
 
-      const p = this.particles[i]
+      const p = this.world.creatures[i]
 
       let input = []
 
-      this.particles.forEach((q) => {
+      this.world.creatures.forEach((q) => {
         input.push(q.location.x)
         input.push(q.location.y)
         input.push(q.velocity.x)
@@ -159,15 +171,21 @@ class Viz {
 
       let output = p.network.activate(input)
       p.moveTo(output)
-      console.log(output);
+
+      let leaningRate = 0.3
+      let target = [this.targetX(p), this.targetY(p), this.targetAngle(p)]
+
+      if(i==0) {
+        // console.log(output);
+        // console.log(target);
+      }
+      p.network.propagate(leaningRate, target)
 
       p.update()
 
       this.pointCloud.positions[i * 3] = p.location.x
       this.pointCloud.positions[i * 3 + 1] = p.location.y
-      // this.pointCloud.positions[i * 3 + 2] = 0
       this.pointCloud.positions[i * 3 + 2] = p.location.z
-      // this.pointCloud.positions[i * 3 + 2] = p.location.z
 
       p.borders()
 
@@ -177,7 +195,7 @@ class Viz {
 
       for (let j = i + 1; j < this.particleCount; j++ ) {
 
-        const q = this.particles[j]
+        const q = this.world.creatures[j]
 
         if (q.numConnections >= this.effectController.maxConnections) {
           continue
